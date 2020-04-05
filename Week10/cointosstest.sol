@@ -22,10 +22,7 @@ contract cointosstest {
         
     }
     
-    function takethebet() public {
-        uint nonce = 3;
-        
-    }
+    
     function checkresult() public{
         require(test.result() != 2, "reveal not called");
         assert(test.choice() == test.result());

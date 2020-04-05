@@ -53,9 +53,14 @@ contract cointoss {
         );
         //commit = sha256(abi.encodePacked(secret));
     }
+    function () payable {}
+    
+    modifier onlyOwner() {
+        require(msg.sender == player1);
+        _;
+    }
 
     uint256 public expiration = 2**256 - 1;
-    function () payable {}
 
     function takebet(uint256 nonce) public payable {
         require(player2 == address(0),"someone took the bet already"); //only 1 other player
@@ -72,9 +77,9 @@ contract cointoss {
         //player2.transfer(va)
     }
 
-    function reveal(uint256 ran) public payable {
+    function reveal(uint256 ran) onlyOwner public payable {
         //bytes32 ran_32 = bytes32(ran);
-        require(msg.sender == owner, "YOU NOT OWNER");
+        //require(msg.sender == owner, "YOU NOT OWNER");
         require(player2 != address(0),"Need someone to take your bet");
         require(now < expiration,"bet expired");
         require((keccak256(abi.encodePacked(ran))) == commit,"hash mismatch");
@@ -97,8 +102,8 @@ contract cointoss {
         player2.transfer(address(this).balance);
     }
 
-    function cancel() public payable {
-        require(msg.sender == player1,"you are not the owner");
+    function cancel() onlyOwner public payable {
+        //require(msg.sender == player1,"you are not the owner");
         require(player2 == address(0),"someone has already joined the bet");
 
         betamount = 0;

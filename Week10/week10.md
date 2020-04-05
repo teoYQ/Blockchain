@@ -35,18 +35,18 @@ Using your application, explore and demonstrate the following Solidity features.
 - Create payable functions
     - the constructor and the following functions are payable ( reveal , takebet, cancel, claimtimeout )
 - Define modifiers
-    - player2 can change his nonce as long as player 1 has not called reveal
+    - Modifiers are used in the reveal and cancel functions, where only the owner can perform such functions
 - Implement inheritance from an existing deployed smart contract
-    - not sure how is this related to the coin toss example
+    - Found it hard to do this in the cointoss, so I created another two contracts, one contract allows the user to get and set counts but the step function is not implemented. The inherit_counter.sol allows me to inherit the counter, and also add his own step function.
 - Play with functions visibility and understand their differences
-#### external:
+- #### external:
 External functions are part of the contract interface, which means they can be called from other contracts and via transactions. An external function f cannot be called internally (i.e. f() does not work, but this.f() works). External functions are sometimes more efficient when they receive large arrays of data.
-#### public:
+- #### public:
 Public functions are part of the contract interface and can be either called internally or via messages. For public state variables, an automatic getter function (see below) is generated.
 internal:
 Those functions and state variables can only be accessed internally (i.e. from within the current contract or contracts deriving from it), without using this.
 private:
-#### private
+- #### private
 Private functions and state variables are only visible for the contract they are defined in and not in derived contracts.
     
 - How is it possible to integrate a log?
