@@ -24,30 +24,21 @@ contract = w3.eth.contract(abi=contract_interface['abi'], bytecode=contract_inte
 # Create an instance, i.e., deploy on the blockchain
 tx_hash = contract.constructor().transact()
 tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+
+#should change this to accept arguments
 private_key = "f59b0a080bf65cc587c6a1596afb9314e57a2b80580e70513bda9a1d244b8a79"
 
-#signed_tx = w3.eth.account.signTransaction(tx, private_key)
-#tx_hash_out = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
 
-#send = w3.eth.sendTransaction({from:w3.eth.defaultAccount,to:tx_receipt.contractAddress, value:web3.toWei(1, "ether")});
 contract = w3.eth.contract(address = tx_receipt.contractAddress, abi = contract_interface['abi'])
 print(contract.functions.getOwner().call())
-tx = {
-        "nonce": 53,
-        'to' : contract.address,
-        "from": w3.eth.defaultAccount,
-        "value" : w3.toWei(1,'ether'),
-        "gas" : 2000000000,
-        "gasPrice": w3.toWei('50','gwei')
-        }
 
-#print(contract.functions.fibonacciA(5).estimateGas())
-signed_tx = w3.eth.account.signTransaction(tx, private_key)
-tx_hash_out = w3.eth.sendTransaction(tx)
-
+w3.eth.sendTransaction({'to': contract.address, 'from':w3.eth.coinbase, 'value': w3.toWei(1,"ether")})
 
 fiba = contract.functions.fibonacciA(5).transact()
+
+#if payable, use the function below
+#fiba = contract.functions.fibonacciA(5).transact({"from": w3.eth.accounts[0], "value": w3.toWei(1,"ether")})
 fiba_receipt = w3.eth.waitForTransactionReceipt(fiba)
 print("================= Receipt ==============")
 for k,v in fiba_receipt.items():

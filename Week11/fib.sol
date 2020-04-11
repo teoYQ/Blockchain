@@ -12,28 +12,31 @@ contract Fib {
     constructor() payable public {
         owner = msg.sender;
     }
-
+    function () payable public{}
     function getOwner() public view returns(address) {
         return(owner);
     }
 
-    function fibonacciA(uint n) public payable returns(uint) {
-        require(msg.value == FEE, "You must pay to execute this");
+    function fibonacciA(uint n)  public returns(uint) {
+        //require(msg.value == FEE, "You must pay to execute this");
         if(n == 0){return(0);}
         if(n == 1){return(1);}
         else{return(fibonacciA(n - 1) + fibonacciA(n - 2));}
     }
 
     function fibonacciB(uint n) public returns(uint) {
-        previousFirst = 0;
-        previousSecond = 1;
-        next = 1;
+        uint[] memory fibs = new uint[](n+1);
+	fibs[0];
+        fibs[1] = 1;
+	//previousSecond = 1;
+	
         for(uint i = 2; i <= n; i++) {
-            next = previousFirst + previousSecond;
-            previousFirst = previousSecond;
-            previousSecond = next;
+           fibs[i] = fibs[i-2] + fibs[i-1];
+	    //next = previousFirst + previousSecond;
+           //previousFirst = previousSecond;
+           // previousSecond = next;
         }
-        return(next);
+        return(fibs[n]);
     }
 
 }
