@@ -26,8 +26,8 @@ tx_hash = contract.constructor().transact()
 tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
 #should change this to accept arguments
-private_key = "f59b0a080bf65cc587c6a1596afb9314e57a2b80580e70513bda9a1d244b8a79"
-
+#private_key = "f59b0a080bf65cc587c6a1596afb9314e57a2b80580e70513bda9a1d244b8a79"
+private_key = "aeb59509693c689fe363784bb8ca3af376b26b41cb8c274a24369b135e55f4a4"
 
 
 contract = w3.eth.contract(address = tx_receipt.contractAddress, abi = contract_interface['abi'])
