@@ -12,16 +12,16 @@ contract_source_code = None
 
 # Compile the contract
 contract_compiled = compile_files(["/home/yq/Desktop/Blockchain/11_src/webapp/sale.sol"])
-print(contract_compiled)
+#print(contract_compiled)
 contract_interface = contract_compiled['/home/yq/Desktop/Blockchain/11_src/webapp/sale.sol:sale']
 
 
 ganache_url = "http://127.0.0.1:8545"
 web3 = Web3(Web3.HTTPProvider(ganache_url))
 
-contract = web3.eth.contract(address="0xf47F4768F830de72503418A9c7EC1F6CF8B5E98F",abi =  contract_interface['abi'])
+contract = web3.eth.contract(address="0xE266e7219229d271D45dD28558CA670bd4Af9eB3",abi =  contract_interface['abi'])
 
-buy = contract.functions.buy(1).transact({"from": w3.eth.accounts[1], "value":10})
+buy = contract.functions.buy(1).transact({"from": web3.eth.accounts[1], "value":10})
 #fiba = contract.functions.fibonacciA(5).transact()
 #fiba_receipt = Web3.eth.waitForTransactionReceipt(fiba)
 #print("================= Receipt ==============")

@@ -1,5 +1,6 @@
 pragma solidity >=0.4.22 <0.7.0;
 
+import "/home/yq/Desktop/Blockchain/11_src/webapp/CTtoken.sol";
 
 /**
  * Design, implement, and deploy (can be locally) a two-party coin tossing protocol and a smart contract running it.
@@ -9,7 +10,7 @@ The protocol must be fair, i.e., for every run, Alice and Bob have equal 50% pro
 The protocol must be secure, i.e., whenever a party deviates from the protocol it should be punished (e.g., by a deposit loss).
 */
 
-contract Cointoss {
+contract Cointoss is CTtoken(1000000) {
     address public player1;
     address public player2;
     uint256 public betamount;
