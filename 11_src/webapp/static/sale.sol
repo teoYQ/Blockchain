@@ -18,7 +18,6 @@ contract sale {
         admin = msg.sender;
     }
 
-    event sell(address _buyer, uint256 _amount);
 
 
     function buy(uint256 _noToken) public payable {

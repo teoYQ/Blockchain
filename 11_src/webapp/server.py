@@ -23,9 +23,9 @@ contract_interface = contract_compiled['/home/yq/Desktop/Blockchain/11_src/webap
 cointoss = w3.eth.contract(abi=contract_interface['abi'], 
                           bytecode=contract_interface['bin'])
 secret_hash = w3.sha3(3)
-print((secret_hash).hex())
+#print((secret_hash).hex())
 # w3.personal.unlockAccount(w3.eth.accounts[0], '') #  Not needed with Ganache
-tx_hash = cointoss.constructor().transact({'from':w3.eth.accounts[0]})
+tx_hash = cointoss.constructor().transact({'from':w3.eth.accounts[2]})
 #{'from':w3.eth.accounts[0], 'value': w3.toWei(1,"ether")}
 tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 

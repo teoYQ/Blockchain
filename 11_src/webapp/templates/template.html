@@ -40,7 +40,12 @@
               alert(error);
               reject(error);
             } else {
-              $("span#number").text(result);
+              console.log(result)
+              //console.log(choice.val())
+
+              $("span#number").text("player 2 wins");
+
+
             }
           });
         });
@@ -55,10 +60,10 @@
           });
         });
         $("a#call_create").click(function () {
-          var newNumber = $("input#choice").val();
+          var choice = $("input#choice").val();
           var hash = $("input#hash").val();
-          console.log(newNumber);
-          contractInstance.createbet(newNumber, hash, { from: web3.eth.accounts[0], value: web3.toWei(1, "ether"), gasPrice: web3.toWei(40, 'gwei') }, function (error, result) {
+
+          contractInstance.createbet(choice, hash, { from: web3.eth.accounts[0], value: web3.toWei(1, "ether"), gasPrice: web3.toWei(40, 'gwei') }, function (error, result) {
             if (error) {
               alert("Please, connect to the network");
               reject(error);
@@ -66,7 +71,15 @@
           });
         });
         $("a#call_cancel").click(function () {
-          contractInstance.cancel( function (error, result) {
+          contractInstance.cancel(function (error, result) {
+            if (error) {
+              alert("Please, connect to the network");
+              reject(error);
+            }
+          });
+        });
+        $("a#call_timeout").click(function () {
+          contractInstance.claimTimeout(function (error, result) {
             if (error) {
               alert("Please, connect to the network");
               reject(error);
@@ -139,13 +152,22 @@
                 </footer>
                 <br />
                 <header>
-                  <h3>HashHelper</h3>
+                  <h3>Cancel</h3>
                 </header>
                 <p> Destroy your contract by clicking below
                   <p>
                     <footer>
                       <a href="#" id="call_cancel" class="button special">Cancel contract</a>
                     </footer>
+                    <br />
+                    <header>
+                      <h3>Claim timeout</h3>
+                    </header>
+                    <p> Get your winning if player 1 did not reveal results
+                      <p>
+                        <footer>
+                          <a href="#" id="call_timeout" class="button special">claim timeout</a>
+                        </footer>
         </article>
       </div>
     </div>

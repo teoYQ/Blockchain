@@ -77,7 +77,7 @@ contract Cointoss is CTtoken(1000000) {
         //player2.transfer(va)
     }
 
-    function reveal(uint256 ran) public onlyOwner payable returns(uint) {
+    function reveal(uint256 ran) public onlyOwner payable returns(string) {
         //bytes32 ran_32 = bytes32(ran);
         //require(msg.sender == owner, "YOU NOT OWNER");
         require(player1 != address(0),"no one created a bet, do create your own!");
@@ -89,12 +89,16 @@ contract Cointoss is CTtoken(1000000) {
         games[player1].result = result;
         if (result == choice) {
             player1.transfer(address(this).balance);
+            player1 = address(0);
+            player2 = address(0);
+            return "player1 wins";
         } else {
             player2.transfer(address(this).balance);
+            player1 = address(0);
+            player2 = address(0);
+            return "player2 wins";
         }
-        player1 = address(0);
-        player2 = address(0);
-        return result;
+        
     }
     function modifyNonce(uint256 nonce_) public {
         require(result == 2, "reveal has already been called");
