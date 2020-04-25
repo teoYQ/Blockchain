@@ -25,26 +25,15 @@ contract Will_maker {
         require(now > wills[_owner].expiry,"will owner is still alive, or not enough time has passed");
         _;
     }
-    /*
-    modifier onlyOwner() {
-        require(msg.sender == owner, "you do no have access to this");
+
+    modifier enoughMoney(uint[] memory _values){
+        uint sum;
+        for (uint j = 0; j < _values.length; j++){
+            sum = sum + _values[j];
+        }
+        require(sum*1 ether == msg.value,"value and sum dont match");
         _;
     }
-
-    modifier afterDeath() {
-        require(alive == false, "owner not dead yet");
-        _;
-    }
-
-    modifier onlyExecuter() {
-        require(msg.sender == executer,"you do not have to power to do this");
-        _;
-    }
-
-    modifier onlyBeneficiaries() {
-        require(inheritance[msg.sender] > 0, "you do no have any thing to claim");
-        _;
-    }*/
     struct Will{
         address executor;
         //uint[] values;
@@ -59,13 +48,8 @@ contract Will_maker {
         mapping(address  => uint) beneficiaries;
     }
     mapping(address => Will) public wills;
-    function create_will(address _exe, address[] memory _beneficiaries,uint[] memory _values,uint _secret) public payable{
+    function create_will(address _exe, address[] memory _beneficiaries,uint[] memory _values,uint _secret) public enoughMoney(_values) payable{
         // create the struct
-        /*uint sum;
-        for (uint j = 0; j < _values.length; j++){
-            sum = sum + _values[j];
-        }
-        require(sum==100,"sum needs to be 100");*/
         Will storage w = wills[msg.sender];
         w.executor = _exe;
         w.dead = 1;
@@ -110,7 +94,8 @@ contract Will_maker {
     }
 
     function claim_money(address _owner) public payable{
-        msg.sender.transfer(wills[_owner].beneficiaries[msg.sender]);
+        msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
+        wills[_owner].beneficiaries[msg.sender] = 0;
     }
 
     function unlock(address _owner, uint _secret) public payable{

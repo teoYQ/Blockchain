@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import Web3 from 'web3';
+import { Button, ButtonGroup } from "@material-ui/core";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+
+
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    }
+    else {
+      window.alert("use chrome or firefox")
+    }
+  }
+
+  async componentWillMount() {
+    await this.loadWeb3()
+  }
+  routeChange=()=>{
+    let path = ""
+  }
+  render() {
+    return (
+      <div id="body" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height:"100vh" }} >
+        
+        <div><h1 > Welcome to etherwill
+           </h1></div>
+        <br></br>
+        <div><ButtonGroup variant="text" aria-label="text primary button group">
+            <Button>Create a will</Button>
+            <Button>Claim Inheritance</Button>
+          </ButtonGroup></div>
+        </div>
+
+    )
+  }
 }
+
 
 export default App;
