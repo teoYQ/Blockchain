@@ -108,16 +108,16 @@ contract Will_maker {
         wills[_owner].beneficiaries[msg.sender] = 0;
         lock = 0;
     }
-    function claim_money(address _owner, bytes32 _pass) public payable{
+    function claim_money(address _owner, uint _pass) public payable{
         require(lock==0,"someone is using this");
-        require(_pass == wills[_owner].secret,"invalid password");
+        require(keccak256(abi.encodePacked(_pass)) == wills[_owner].secret,"invalid password");
         lock = 1;
         msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
         wills[_owner].beneficiaries[msg.sender] = 0;
         lock = 0;
     }
-    function execute(address _owner, address _exe) public payable{
-        require(_exe == wills[_owner].executor,"you got no power");
+    function execute(address _owner) public payable{
+        require(msg.sender == wills[_owner].executor,"you got no power");
         require(lock==0,"someone is using this");
         lock = 1;
         for (uint i = 0; i<wills[_owner].count; i++){

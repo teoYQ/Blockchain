@@ -52,33 +52,35 @@ class Create extends Component {
             contract_addr:0,
             inheritant:0
         }
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handle4 = this.handle4.bind(this);
         this.handleSecondForm = this.handleSecondForm.bind(this);
         this.handle3 = this.handle3.bind(this);
     }
     
-    handleSubmit= (event)=>{
+    handle4 = async (event) => {
         event.preventDefault()
-        console.log(event.target.value)
-        this.state.beneficiaries.push(this.state.bene)
-        this.state.values.push(this.state.value)
-        console.log(this.state)
-        console.log(this.state.beneficiaries)
+        console.log(this.state.inheritant)
+        var ben = []
+        ben.push(this.state.inheritant)
+        var val = []
+        val.push(this.state.value)
+        var owner = await this.state.will_maker.methods.add_beneficiaries(ben,val).send({ from: this.state.account, value:window.web3.utils.toWei(this.state.value.toString(),"ether")})
+        var beneficiaries = await this.state.will_maker.methods.get_beneficiaries().call()
+        console.log(beneficiaries)
+        alert(beneficiaries)
+        console.log("done")
     }
     handleSecondForm=async(event)=>{
         event.preventDefault()
-        console.log(event.target.inheritance.value)
         //this.setState({executor: event.target.Executor})
         //this.setState({secret: event.target.secret})
         //this.setState({value_t: event.target.inheritance})
         var total = 0
-        for (var i=0; i<this.state.values.length;i++){
-            total+=this.state.values[i]
-        }
         console.log(this.state)
         console.log(this.state.executor)
         //await window.web3.eth.sendTransaction({from:this.state.account,to:this.state.contract_addr, value: window.web3.utils.toWei("1","ether")})
-        const res = await this.state.will_maker.methods.create_will(this.state.executor,[...this.state.beneficiaries],[...this.state.values],this.state.secret.toString).send({from:this.state.account,value:window.web3.utils.toWei(total.toString(),"ether")})
+        //const res = await this.state.will_maker.methods.create_will(this.state.executor,[...this.state.beneficiaries],[...this.state.values],this.state.secret).send({from:this.state.account,value:window.web3.utils.toWei(total.toString(),"ether")})
+        const res = await this.state.will_maker.methods.create_will(this.state.executor,[this.state.bene],[this.state.value],this.state.secret).send({from:this.state.account,value:window.web3.utils.toWei(this.state.value.toString(),"ether")})
         var beneficiaries = await this.state.will_maker.methods.get_beneficiaries().call()
         console.log(beneficiaries[0])
         console.log(res)
@@ -88,7 +90,7 @@ class Create extends Component {
         console.log(this.state.inheritant)
         var owner = await this.state.will_maker.methods.gethash(this.state.inheritant).call()
         console.log(owner)
-        this.setState({inheritant:owner})
+        this.setState({secret:owner})
     }
     render() {
         const benef = this.state.beneficiaries.map(function(ben){
@@ -101,25 +103,20 @@ class Create extends Component {
             <div style={{padding:padding, left: left, top:top}}>
             <h3>Create a Will</h3>
             
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={this.handleSecondForm}>
                 <p>Enter the address of beneficiary and his inheritance</p>
                 <input type= "text" placeholder="Address" name="Address" onChange={(e)=> this.setState({bene:e.target.value})}></input>
                 <input type= "text" placeholder="Value" name="Value" onChange={(e)=> this.setState({value:e.target.value})}></input>
-                <br></br>
-                <br></br>
-                <button>Add beneficiaries</button>
-            </form>
-        <div>{benef}</div>
-            <br></br>
-            <form onSubmit={this.handleSecondForm}>
+            
+                <div>{benef}</div>
+                    <br></br>
+            
                 <p>Enter the executor's address</p>
                 <input type = "text" placeholder="Executor" name="Executor" onChange={(e)=> this.setState({executor:e.target.value})}></input>
                 <br></br>
-                <p>Enter the will's value</p>
-                <input type = "text" placeholder="inheritance" name="inheritance" onChange={(e)=> this.setState({value_t:e.target.value})}></input>
-
+                
                 <p>Enter the will's secret</p>
-                <input type = "text" placeholder="Secret" value={this.state.inheritant} name="Secret"onChange={(e)=> this.setState({secret:e.target.value})}></input>
+                <input type = "text" placeholder="Secret" value={this.state.secret} name="Secret"onChange={(e)=> this.setState({secret:e.target.value})}></input>
                 
                 <br></br>
                 <br></br>
@@ -128,11 +125,19 @@ class Create extends Component {
             <br></br>
             <form onSubmit = {this.handle3}>
             <p>Helper hash converter</p>
-                <input type = "text" placeholder="Enter something to hash here" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <input type = "text" placeholder="Enter a number to hash here" name="secret" onChange={(e)=> this.setState({secret:e.target.value})}></input>
                 <br></br>
                 
                 <button>Generate Hash</button>
             </form>
+            <br></br>
+            <form onSubmit={this.handle4}>
+                    <p>Want to Add more beneficiaries?</p>
+                    <input type="text" placeholder="inheritant" name="inheritant" onChange={(e) => this.setState({ inheritant: e.target.value })}></input>
+                    <input type="text" placeholder="value" name="value" onChange={(e) => this.setState({ value: e.target.value })}></input>
+                    <br></br>
+                    <button>Add beneficiaries</button>
+                </form>
            </div>
         )
     }

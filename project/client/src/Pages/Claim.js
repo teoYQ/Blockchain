@@ -42,7 +42,8 @@ class Claim extends Component {
         super(props)
         this.state = {
             account: "",
-            inheritant:0
+            inheritant:0,
+            pass:0
         }
         this.handle3 = this.handle3.bind(this);
     }
@@ -53,6 +54,12 @@ class Claim extends Component {
         var owner = await this.state.will_maker.methods.claim_money(this.state.inheritant).send({from:this.state.account})
         console.log("done")
     }
+    handle2= async(event) =>{
+      event.preventDefault()
+      console.log(this.state.inheritant)
+      var owner = await this.state.will_maker.methods.claim_money(this.state.inheritant,this.state.pass).send({from:this.state.account})
+      console.log("done")
+  }
     render() {
         
         var left = 30 + 'vw';
@@ -67,6 +74,15 @@ class Claim extends Component {
             <form onSubmit = {this.handle3}>
             <p>Enter the your owner's address</p>
                 <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <br></br>
+                <button>Claim Will</button>
+            </form>
+            <br></br>
+            <form onSubmit = {this.handle2}>
+              
+            <p>Enter the your owner's address</p>
+                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <input type = "text" placeholder="pass" name="pass" onChange={(e)=> this.setState({pass:e.target.value})}></input>
                 <br></br>
                 <button>Claim Will</button>
             </form>

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 //import { Form, Row, Col, Alert } from "react-bootstrap"
 import Web3 from 'web3';
 import Will_maker from "../artifacts/Will_maker.json"
+import { keys } from '@material-ui/core/styles/createBreakpoints';
 //import contract from "truffle-contract"
 class Claim extends Component {
     async loadBlockchainData() {
@@ -13,11 +14,11 @@ class Claim extends Component {
         const abi = Will_maker.abi
         const address = Will_maker.networks["5777"].address
         console.log(address)
-        const will_maker = new web3.eth.Contract(abi,address)
-        this.setState({contract_addr: address})
-       //const will_maker = await _will_maker.methods.deployed()
+        const will_maker = new web3.eth.Contract(abi, address)
+        this.setState({ contract_addr: address })
+        //const will_maker = await _will_maker.methods.deployed()
         console.log(will_maker)
-        this.setState({will_maker})
+        this.setState({ will_maker })
     }
     async loadWeb3() {
         if (window.ethereum) {
@@ -42,50 +43,77 @@ class Claim extends Component {
         super(props)
         this.state = {
             account: "",
-            inheritant:0
+            owner: 0,
+            inheritant: 0,
+            value: 0,
+            open:false
         }
         this.handle3 = this.handle3.bind(this);
     }
-    
-    handle3= async(event) =>{
+    triggerAddTripState = () => {
+        this.setState({
+          ...this.state,
+          isEmptyState: false,
+          isAddTripState: true
+        })}
+    handle1 = async (event) => {
         event.preventDefault()
-        console.log(this.state.inheritant)
-        var owner = await this.state.will_maker.methods.claim_money(this.state.inheritant).send({from:this.state.account})
+        console.log(this.state.owner)
+        var owner = await this.state.will_maker.methods.execute(this.state.owner).send({ from: this.state.account })
+        console.log("done")
+    }
+    handle2 = async (event) => {
+        event.preventDefault()
+        var owner = await this.state.will_maker.methods.still_alive().send({ from: this.state.account })
+        var dead = await this.state.will_maker.methods.wills(this.state.account).call()
+        console.log(dead)
+        alert("expiry extended by 1, new expiry is " + (dead["expiry"]).toString())
+    }
+    handle3 = async (event) => {
+        event.preventDefault()
+        this.setState({open:true})
+        //var dead = await this.state.will_maker.methods.wills(this.state.account).call()
+        var dead = await this.state.will_maker.methods.get_inheritance(this.state.account).call()
+        console.log(dead)
+        console.log(typeof(dead[0]))
         console.log("done")
     }
     render() {
-        
+
         var left = 30 + 'vw';
         var top = 10 + 'vw';
         var padding = 10 + 'vw';
+        let will;
+        if (this.state.open) {
+            will = <div><p></p></div>
+        }
         return (
-            <div style={{padding:padding, left: left, top:top}}>
-            <h3>Additional functionalities</h3>
-            
-            
-            <br></br>
-            <form onSubmit = {this.handle3}>
-            <p>Execute the will</p>
-                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
-                <input type = "text" placeholder="executor" name="executor" onChange={(e)=> this.setState({executor:e.target.value})}></input>
+            <div style={{ padding: padding, left: left, top: top }}>
+                <h3>Additional functionalities</h3>
+
+
                 <br></br>
-                <button>Execute</button>
-            </form>
-            <br></br>
-            <form onSubmit = {this.handle3}>
-            <p>Extend Will</p>
-                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <form onSubmit={this.handle1}>
+                    <p>Execute the will</p>
+                    <input type="text" placeholder="owner" name="owner" onChange={(e) => this.setState({ owner: e.target.value })}></input>
+                    <br></br>
+                    <button>Execute</button>
+                </form>
                 <br></br>
-                <button>Claim Will</button>
-            </form>
-            <br></br>
-            <form onSubmit = {this.handle3}>
-            <p>Enter the your owner's address</p>
-                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <form onSubmit={this.handle2}>
+                    <p>Extend Will <p>Not dying soon? Click below</p></p>
+                    <button>Extend Will</button>
+                </form>
                 <br></br>
-                <button>Claim Will</button>
-            </form>
-           </div>
+
+
+                <p>Want to check out your will?</p>
+                <button onClick={this.handle3}>view</button>
+
+                
+                
+
+            </div>
         )
     }
 }
