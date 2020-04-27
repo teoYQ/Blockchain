@@ -60,9 +60,24 @@ class Claim extends Component {
         var padding = 10 + 'vw';
         return (
             <div style={{padding:padding, left: left, top:top}}>
-            <h3>Create a Will</h3>
+            <h3>Additional functionalities</h3>
             
             
+            <br></br>
+            <form onSubmit = {this.handle3}>
+            <p>Execute the will</p>
+                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <input type = "text" placeholder="executor" name="executor" onChange={(e)=> this.setState({executor:e.target.value})}></input>
+                <br></br>
+                <button>Execute</button>
+            </form>
+            <br></br>
+            <form onSubmit = {this.handle3}>
+            <p>Extend Will</p>
+                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <br></br>
+                <button>Claim Will</button>
+            </form>
             <br></br>
             <form onSubmit = {this.handle3}>
             <p>Enter the your owner's address</p>

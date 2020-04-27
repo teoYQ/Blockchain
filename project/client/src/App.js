@@ -5,6 +5,7 @@ import { Route, BrowserRouter } from 'react-router-dom'
 import Home from "./Pages/Home"
 import Claim from "./Pages/Claim"
 import Create from "./Pages/Create"
+import Others from "./Pages/Others"
 import 'bootstrap/dist/css/bootstrap.min.css';
 class App extends Component {
 
@@ -17,6 +18,7 @@ class App extends Component {
       <Nav.Link href="/">Home</Nav.Link>
       <Nav.Link href="create">Create Wills</Nav.Link>
       <Nav.Link href="claim">Claim Inheritance</Nav.Link>
+      <Nav.Link href="others">Others </Nav.Link>
     </Nav>
     
   </Navbar>
@@ -24,6 +26,7 @@ class App extends Component {
           <Route component={Home} exact path="/" />
           <Route component={Claim} path="/claim" />
           <Route component={Create} path="/create" />
+          <Route component={Others} path="/others" />
         </BrowserRouter></div>
     )
 

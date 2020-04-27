@@ -39,6 +39,7 @@ contract("Will_maker",(accounts)=> {
             const account_two = accounts[2];
             await will_maker.create_will(account_one,[account_one,account_two],[1,2],5,{value : (web3.utils.toWei("3","ether"))})
             var inherit = await will_maker.get_inheritance(accounts[0],{from:accounts[1]})
+            console.log(inherit)
             assert.equal(inherit,1)
         })
     })

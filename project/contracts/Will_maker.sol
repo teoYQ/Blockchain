@@ -9,6 +9,8 @@ contract Will_maker {
     //bytes32 secret;
     //address executer;
     uint public deployed = 1;
+    address owners;
+    uint lock;
     constructor() public payable {
 
     }
@@ -18,11 +20,11 @@ contract Will_maker {
     }
 
     modifier willOwners(){
-        require(wills[msg.sender].dead != 0,"no will to adjust here");
+        require(wills[msg.sender].expiry != 0,"no will to adjust here");
         _;
     }
     modifier ownerDied(address _owner){
-        require(now > wills[_owner].expiry,"will owner is still alive, or not enough time has passed");
+        require(block.number > wills[_owner].expiry,"will owner is still alive, or not enough time has passed");
         _;
     }
 
@@ -37,8 +39,8 @@ contract Will_maker {
     struct Will{
         address executor;
         //uint[] values;
-        uint dead;
-        uint secret;
+
+        bytes32 secret;
         uint count;
         uint256 expiry;
 
@@ -47,22 +49,28 @@ contract Will_maker {
         mapping(uint => address) beneficiariesList;
         mapping(address  => uint) beneficiaries;
     }
+    event created_will(
+        address _owner,
+        address[] _bene,
+        uint[] _values
+    );
     mapping(address => Will) public wills;
-    function create_will(address _exe, address[] memory _beneficiaries,uint[] memory _values,uint _secret) public enoughMoney(_values) payable{
+    function create_will(address _exe, address[] memory _beneficiaries,uint[] memory _values,bytes32 _sec) enoughMoney(_values)  public payable{
         // create the struct
+        owners = msg.sender;
         Will storage w = wills[msg.sender];
         w.executor = _exe;
-        w.dead = 1;
-        w.secret = _secret;
+        w.secret = _sec;
         w.count = _beneficiaries.length;
         //w.beneficiaries = _beneficiaries;
         //w.values = _values;
-        w.expiry = now + 2400 hours;
+        w.expiry = block.number;
         for (uint i = 0; i < _beneficiaries.length; i++ ){
             w.beneficiaries[_beneficiaries[i]] = _values[i];
             w.beneficiariesList[i] = _beneficiaries[i];
         }
         wills[msg.sender] = w;
+        emit created_will(msg.sender,_beneficiaries,_values);
     }
     function get_beneficiaries() public view returns(address[] memory) {
         address[] memory out = new address[](wills[msg.sender].count);
@@ -80,7 +88,7 @@ contract Will_maker {
        }
     }
 
-    function get_inheritance(address _owner) public view onlyBeneficiaries(_owner) returns(uint _amount){
+    function get_inheritance(address _owner) public view returns(uint _amount){
         return wills[_owner].beneficiaries[msg.sender];
         /*for (uint i = 0; i<wills[_owner].count; i++){
             if(wills[_owner].beneficiaries[i] == msg.sender){
@@ -89,18 +97,41 @@ contract Will_maker {
         }*/
     }
 
-    function still_alive() public payable {
-        wills[msg.sender].expiry += 2400 hours;
+    function still_alive() public willOwners  payable {
+        wills[msg.sender].expiry += 2;
     }
 
     function claim_money(address _owner) public payable{
+        require(lock==0,"someone is using this");
+        lock = 1;
         msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
         wills[_owner].beneficiaries[msg.sender] = 0;
+        lock = 0;
+    }
+    function claim_money(address _owner, bytes32 _pass) public payable{
+        require(lock==0,"someone is using this");
+        require(_pass == wills[_owner].secret,"invalid password");
+        lock = 1;
+        msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
+        wills[_owner].beneficiaries[msg.sender] = 0;
+        lock = 0;
+    }
+    function execute(address _owner, address _exe) public payable{
+        require(_exe == wills[_owner].executor,"you got no power");
+        require(lock==0,"someone is using this");
+        lock = 1;
+        for (uint i = 0; i<wills[_owner].count; i++){
+            msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
+            wills[_owner].beneficiaries[msg.sender] = 0;
+            }
+        lock = 0;
+    }
+    function gethash(uint ran)  public pure returns(bytes32){
+        return(keccak256(abi.encodePacked(ran)));
     }
 
-    function unlock(address _owner, uint _secret) public payable{
-        require(_secret == wills[_owner].secret,"wrong pass");
-        wills[_owner].expiry = 0;
+
+    function() external payable{
     }
 
 }
