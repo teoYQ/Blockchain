@@ -57,8 +57,10 @@ class Claim extends Component {
     handle2= async(event) =>{
       event.preventDefault()
       console.log(this.state.inheritant)
-      var owner = await this.state.will_maker.methods.claim_money(this.state.inheritant,this.state.pass).send({from:this.state.account})
-      console.log("done")
+      console.log(this.state.pass)
+      console.log(this.state.account)
+      var xsx = await this.state.will_maker.methods.claim_money_pass(this.state.inheritant,this.state.pass).send({from:this.state.account})
+      console.log(xsx)
   }
     render() {
         
@@ -67,7 +69,7 @@ class Claim extends Component {
         var padding = 10 + 'vw';
         return (
             <div style={{padding:padding, left: left, top:top}}>
-            <h3>Create a Will</h3>
+            <h3>Claim a Will</h3>
             
             
             <br></br>

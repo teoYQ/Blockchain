@@ -60,7 +60,9 @@ class Claim extends Component {
         event.preventDefault()
         console.log(this.state.owner)
         var owner = await this.state.will_maker.methods.execute(this.state.owner).send({ from: this.state.account })
-        console.log("done")
+        var dead = await this.state.will_maker.methods.wills(this.state.owner).call()
+        console.log(dead["expiry"])
+        alert("expiry set to block "+ dead["expiry"] + ", which is the current block, will is unlocked now")
     }
     handle2 = async (event) => {
         event.preventDefault()
@@ -71,10 +73,13 @@ class Claim extends Component {
     }
     handle3 = async (event) => {
         event.preventDefault()
-        this.setState({open:true})
         //var dead = await this.state.will_maker.methods.wills(this.state.account).call()
-        var dead = await this.state.will_maker.methods.get_inheritance(this.state.account).call()
+        var dead = await this.state.will_maker.methods.get_inheritance(this.state.owner).call()
         console.log(dead)
+        console.log(this.state.owner)
+        console.log(dead.toString(10))
+        
+        alert("your Inheritance is " + dead/1000000000000000000 + "ethers")
         console.log(typeof(dead[0]))
         console.log("done")
     }
@@ -107,8 +112,6 @@ class Claim extends Component {
                 <br></br>
 
 
-                <p>Want to check out your will?</p>
-                <button onClick={this.handle3}>view</button>
 
                 
                 

@@ -8,6 +8,7 @@ contract Will_maker {
     //bool alive;
     //bytes32 secret;
     //address executer;
+    //bytes32 public check;
     uint public deployed = 1;
     address owners;
     uint lock;
@@ -89,7 +90,7 @@ contract Will_maker {
     }
 
     function get_inheritance(address _owner) public view returns(uint _amount){
-        return wills[_owner].beneficiaries[msg.sender];
+        return wills[_owner].beneficiaries[msg.sender] * 1 ether;
         /*for (uint i = 0; i<wills[_owner].count; i++){
             if(wills[_owner].beneficiaries[i] == msg.sender){
                 return wills[_owner].values[i];
@@ -98,34 +99,41 @@ contract Will_maker {
     }
 
     function still_alive() public willOwners  payable {
-        wills[msg.sender].expiry += 2;
+        wills[msg.sender].expiry += 4;
     }
 
-    function claim_money(address _owner) public payable{
+    function claim_money(address _owner) public payable ownerDied(_owner){
         require(lock==0,"someone is using this");
         lock = 1;
         msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
         wills[_owner].beneficiaries[msg.sender] = 0;
         lock = 0;
     }
-    function claim_money(address _owner, uint _pass) public payable{
+    function claim_money_pass(address _owner, uint _pass) public payable{
         require(lock==0,"someone is using this");
+        //check = keccak256(abi.encodePacked(_pass));
         require(keccak256(abi.encodePacked(_pass)) == wills[_owner].secret,"invalid password");
         lock = 1;
         msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
         wills[_owner].beneficiaries[msg.sender] = 0;
         lock = 0;
     }
-    function execute(address _owner) public payable{
+    function execute(address _owner) public payable returns (uint){
+        require(msg.sender == wills[_owner].executor,"you got no power");
+        wills[_owner].expiry = block.number;
+        return wills[_owner].expiry;
+    }
+    /*function execute(address _owner) public payable{
         require(msg.sender == wills[_owner].executor,"you got no power");
         require(lock==0,"someone is using this");
         lock = 1;
         for (uint i = 0; i<wills[_owner].count; i++){
-            msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
+            address curr = wills[_owner].beneficiariesList[i];
+            curr.transfer(wills[_owner].beneficiaries[curr] * 1 ether);
             wills[_owner].beneficiaries[msg.sender] = 0;
             }
         lock = 0;
-    }
+    }*/
     function gethash(uint ran)  public pure returns(bytes32){
         return(keccak256(abi.encodePacked(ran)));
     }

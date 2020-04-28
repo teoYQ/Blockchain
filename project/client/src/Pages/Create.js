@@ -87,8 +87,8 @@ class Create extends Component {
     }
     handle3= async(event) =>{
         event.preventDefault()
-        console.log(this.state.inheritant)
-        var owner = await this.state.will_maker.methods.gethash(this.state.inheritant).call()
+        console.log(this.state.secret)
+        var owner = await this.state.will_maker.methods.gethash(this.state.secret).call()
         console.log(owner)
         this.setState({secret:owner})
     }
