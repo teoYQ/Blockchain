@@ -2,18 +2,9 @@ pragma solidity >=0.4.21 <0.7.0;
 
 
 contract Will_maker {
-    //address[] wills;
-    //address owner;
-    //uint256 give_away;
-    //bool alive;
-    //bytes32 secret;
-    //address executer;
-    //bytes32 public check;
     uint public deployed = 1;
-    address owners;
-    uint lock;
+    uint8 lock;
     constructor() public payable {
-
     }
     modifier onlyBeneficiaries(address _owner){
         require(wills[_owner].beneficiaries[msg.sender] != 0,"you do not have an inheritance here");
@@ -39,14 +30,9 @@ contract Will_maker {
     }
     struct Will{
         address executor;
-        //uint[] values;
-
         bytes32 secret;
         uint count;
         uint256 expiry;
-
-        //address[] beneficiaries;
-        //uint[] values;
         mapping(uint => address) beneficiariesList;
         mapping(address  => uint) beneficiaries;
     }
@@ -56,9 +42,8 @@ contract Will_maker {
         uint[] _values
     );
     mapping(address => Will) public wills;
-    function create_will(address _exe, address[] memory _beneficiaries,uint[] memory _values,bytes32 _sec) enoughMoney(_values)  public payable{
+    function create_will(address _exe, address[] memory _beneficiaries,uint[] memory _values,bytes32 _sec) public enoughMoney(_values) payable{
         // create the struct
-        owners = msg.sender;
         Will storage w = wills[msg.sender];
         w.executor = _exe;
         w.secret = _sec;
@@ -73,7 +58,7 @@ contract Will_maker {
         wills[msg.sender] = w;
         emit created_will(msg.sender,_beneficiaries,_values);
     }
-    function get_beneficiaries() public view returns(address[] memory) {
+    function get_beneficiaries() public view willOwners() returns(address[] memory) {
         address[] memory out = new address[](wills[msg.sender].count);
         for (uint i = 0; i < wills[msg.sender].count; i++){
             out[i] = wills[msg.sender].beneficiariesList[i];
@@ -88,24 +73,32 @@ contract Will_maker {
            wills[msg.sender].count += 1;
        }
     }
+    function remove_beneficiary(address _bene) public willOwners() payable{
+        require(lock==0,"lock in use");
+        lock = 1;
+        uint refund = wills[msg.sender].beneficiaries[_bene];
+        wills[msg.sender].beneficiaries[_bene] = 0;
+        (bool success, ) = msg.sender.call.value(refund)("");
+        require(success,"failed to pay");
+        for (uint i; i<wills[msg.sender].count;i++){
+            if(wills[msg.sender].beneficiariesList[i]==_bene){ 
+                wills[msg.sender].beneficiariesList[i] = address(0);
+            }
+        }
 
+        lock =0;
+    }
+    
     function get_inheritance(address _owner) public view returns(uint _amount){
         return wills[_owner].beneficiaries[msg.sender] * 1 ether;
-        /*for (uint i = 0; i<wills[_owner].count; i++){
-            if(wills[_owner].beneficiaries[i] == msg.sender){
-                return wills[_owner].values[i];
-            }
-        }*/
-    }
 
-    function still_alive() public willOwners  payable {
-        wills[msg.sender].expiry += 4;
     }
 
     function claim_money(address _owner) public payable ownerDied(_owner){
         require(lock==0,"someone is using this");
         lock = 1;
-        msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
+        (bool success, ) = msg.sender.call.value(wills[_owner].beneficiaries[msg.sender] * 1 ether)("");
+        require(success,"failed to pay");
         wills[_owner].beneficiaries[msg.sender] = 0;
         lock = 0;
     }
@@ -114,15 +107,24 @@ contract Will_maker {
         //check = keccak256(abi.encodePacked(_pass));
         require(keccak256(abi.encodePacked(_pass)) == wills[_owner].secret,"invalid password");
         lock = 1;
-        msg.sender.transfer(wills[_owner].beneficiaries[msg.sender] * 1 ether);
+        (bool success, ) = msg.sender.call.value(wills[_owner].beneficiaries[msg.sender] * 1 ether)("");
+        require(success,"failed to pay");
         wills[_owner].beneficiaries[msg.sender] = 0;
         lock = 0;
+    }
+    
+    function still_alive() public willOwners  payable {
+        wills[msg.sender].expiry += 4;
     }
     function execute(address _owner) public payable returns (uint){
         require(msg.sender == wills[_owner].executor,"you got no power");
         wills[_owner].expiry = block.number;
         return wills[_owner].expiry;
     }
+    function gethash(uint ran)  public pure returns(bytes32){
+        return(keccak256(abi.encodePacked(ran)));
+    }
+
     /*function execute(address _owner) public payable{
         require(msg.sender == wills[_owner].executor,"you got no power");
         require(lock==0,"someone is using this");
@@ -134,9 +136,7 @@ contract Will_maker {
             }
         lock = 0;
     }*/
-    function gethash(uint ran)  public pure returns(bytes32){
-        return(keccak256(abi.encodePacked(ran)));
-    }
+    
 
 
     function() external payable{
