@@ -13,11 +13,18 @@ A decentralized Will making webapp, built using ReactJS, ReactBootstrap, Truffle
 
 ### How to run code
 Cd into the project directory
+
 $ Npm install truffle
+
 $ Cd client
+
 $ Npm install
 Download and run ganache, ensure its running at port 8545
+
 $ cd ..
+
 $ Truffle migrate
+
 $ cd client 
+
 $ npm run start
