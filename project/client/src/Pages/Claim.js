@@ -75,7 +75,7 @@ class Claim extends Component {
             <br></br>
             <form onSubmit = {this.handle3}>
             <p>Enter the your owner's address</p>
-                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <input type = "text" placeholder="Address" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
                 <br></br>
                 <button>Claim Will</button>
             </form>
@@ -83,7 +83,7 @@ class Claim extends Component {
             <form onSubmit = {this.handle2}>
               
             <p>Enter the your owner's address</p>
-                <input type = "text" placeholder="inheritant" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
+                <input type = "text" placeholder="Address" name="inheritant" onChange={(e)=> this.setState({inheritant:e.target.value})}></input>
                 <input type = "text" placeholder="pass" name="pass" onChange={(e)=> this.setState({pass:e.target.value})}></input>
                 <br></br>
                 <button>Claim Will</button>

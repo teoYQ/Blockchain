@@ -91,6 +91,22 @@ contract("Will_maker",(accounts)=> {
         })
     })
 
+    describe("cannot claim inheritance owner havent die",async()=>{
+        it("returns error",async()=>{
+            const account_one = accounts[1];
+            const account_two = accounts[2];
+            console.log(will_maker.address)
+            const bal_bef = await web3.eth.getBalance(will_maker.address);
+            const secret = await will_maker.gethash(21)
+            console.log(secret)
+            await will_maker.create_will(account_one,[account_one,account_two],[1,2],secret,{value : (web3.utils.toWei("3","ether"))})
+            await will_maker.still_alive()
+            await truffleAssert.reverts(will_maker.claim_money(accounts[0],{from:accounts[1]}))
+            //expect(function(){(will_maker.claim_money_pass(accounts[0],20,{from:accounts[1]}))}.to.throw())
+            
+        })
+    })
+
     describe("add_beneficiaries",async()=>{
         it("successfully creates a will",async()=>{
             const account_one = accounts[1];
@@ -108,15 +124,30 @@ contract("Will_maker",(accounts)=> {
         })
     });
 
+    describe("non owners add_beneficiaries",async()=>{
+        it("throws error",async()=>{
+            const account_one = accounts[1];
+            const account_two = accounts[2];
+            const secret = "0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563"
+            await will_maker.create_will(account_one,[account_one,account_two],[1,2],secret,{value : (web3.utils.toWei("3","ether"))})
+            await truffleAssert.reverts( will_maker.add_beneficiaries([accounts[3],accounts[4]],[3,4],{from:accounts[5]}))
+            
+
+        })
+    });
+
     describe("remove_beneficiaries",async()=>{
         it("successfully deletes a beneficiary from will",async()=>{
             const account_one = accounts[1];
             const account_two = accounts[2];
             const secret = "0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563"
             await will_maker.create_will(account_one,[account_one,account_two],[1,2],secret,{value : (web3.utils.toWei("3","ether"))})
+            const bal_bef = await web3.eth.getBalance(accounts[0]);
             await will_maker.remove_beneficiary(account_two)
             var bal_of_removed = await will_maker.get_inheritance(accounts[0],{from:accounts[2]})
+            const bal_aft = await web3.eth.getBalance(accounts[0]);
             assert.equal(0,bal_of_removed)
+            assert.isAbove(parseInt(bal_aft,10),parseInt(bal_bef,10))
 
         })
     });
@@ -144,7 +175,14 @@ contract("Will_maker",(accounts)=> {
         })
     })
 
-
+    describe("get hash",async()=>{
+        it("returns correct hash value",async()=>{
+    
+            const secret = "0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563"
+            hash = await will_maker.gethash(0)
+            assert.equal(secret,hash)
+        })
+    })
 
 })
 

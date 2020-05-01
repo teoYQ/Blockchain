@@ -77,9 +77,9 @@ contract Will_maker {
         require(lock==0,"lock in use");
         lock = 1;
         uint refund = wills[msg.sender].beneficiaries[_bene];
-        wills[msg.sender].beneficiaries[_bene] = 0;
-        (bool success, ) = msg.sender.call.value(refund)("");
+        (bool success, ) = msg.sender.call.value(refund*1 ether)("");
         require(success,"failed to pay");
+        wills[msg.sender].beneficiaries[_bene] = 0;
         for (uint i; i<wills[msg.sender].count;i++){
             if(wills[msg.sender].beneficiariesList[i]==_bene){ 
                 wills[msg.sender].beneficiariesList[i] = address(0);

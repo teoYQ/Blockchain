@@ -46,7 +46,8 @@ class Claim extends Component {
             owner: 0,
             inheritant: 0,
             value: 0,
-            open:false
+            open:false,
+            to_remove: 0
         }
         this.handle3 = this.handle3.bind(this);
     }
@@ -74,14 +75,10 @@ class Claim extends Component {
     handle3 = async (event) => {
         event.preventDefault()
         //var dead = await this.state.will_maker.methods.wills(this.state.account).call()
-        var dead = await this.state.will_maker.methods.get_inheritance(this.state.owner).call()
-        console.log(dead)
-        console.log(this.state.owner)
-        console.log(dead.toString(10))
-        
-        alert("your Inheritance is " + dead/1000000000000000000 + "ethers")
-        console.log(typeof(dead[0]))
-        console.log("done")
+        var dead = await this.state.will_maker.methods.remove_beneficiary(this.state.to_remove).send({from: this.state.account})
+        var beneficiaries = await this.state.will_maker.methods.get_beneficiaries().call()
+        console.log(beneficiaries)
+        alert(beneficiaries)
     }
     render() {
 
@@ -110,6 +107,12 @@ class Claim extends Component {
                     <button>Extend Will</button>
                 </form>
                 <br></br>
+                <form onSubmit={this.handle3}>
+                    <p>Remove beneficiary</p>
+                    <input type="text" placeholder="Address to remove" name="toremove" onChange={(e) => this.setState({ to_remove: e.target.value })}></input>
+                    <br></br>
+                    <button>Remove!</button>
+                </form>
 
 
 
